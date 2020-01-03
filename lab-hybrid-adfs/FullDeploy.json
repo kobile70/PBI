@@ -1,10 +1,10 @@
 ﻿{
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "assetLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/Azure-Samples/active-directory-lab-hybrid-adfs/master/lab-hybrid-adfs/",
+      "defaultValue": "https://raw.githubusercontent.com//kobile70/PBIMobile-lab/master/lab-hybrid-adfs/",
       "metadata": { "description": "This is the location in which all the linked templates are stored." }
     },
     "adminUsername": {

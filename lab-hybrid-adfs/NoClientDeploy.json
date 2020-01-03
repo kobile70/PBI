@@ -1,10 +1,10 @@
 ﻿{
-  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "assetLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/Azure-Samples/active-directory-lab-hybrid-adfs/master/lab-hybrid-adfs/",
+      "defaultValue": "https://raw.githubusercontent.com//kobile70/PBIMobile-lab/master/lab-hybrid-adfs/",
       "metadata": { "description": "This is the location in which all the linked templates are stored." }
     },
     "adminUsername": {
@@ -89,6 +89,11 @@
       "metadata": { "description": "The IP Addresses assigned to the domain controllers (a, b). Remember the first IP in a subnet is .4 e.g. 10.0.0.0/16 reserves 10.0.0.0-3. Specify one IP per server - must match numberofVMInstances or deployment will fail." },
       "defaultValue": "10.0.1.5"
     },
+    "sqlRSIP": {
+      "type": "string",
+      "metadata": { "description": "The IP Addresses assigned to the domain controllers (a, b). Remember the first IP in a subnet is .4 e.g. 10.0.0.0/16 reserves 10.0.0.0-3. Specify one IP per server - must match numberofVMInstances or deployment will fail." },
+      "defaultValue": "10.0.1.5"
+    },
     "dmzSubnetAddressRange": {
       "type": "string",
       "metadata": { "description": "The address range of the desired subnet for the DMZ." },
@@ -105,10 +110,12 @@
     "networkInterfaceName": "NIC",
     "addcVMNameSuffix": "dc",
     "adfsVMNameSuffix": "fs",
+    "sqlRSVMNameSuffix": "rs",
     "wapVMNameSuffix": "px",
     "location": "[resourceGroup().location]",
     "companyNamePrefix": "[split(parameters('adDomainName'),'.')[0]]",
     "adfsVMName": "[toupper(concat(variables('companyNamePrefix'), variables('adfsVMNameSuffix')))]",
+    "sqlRSVMName": "[toupper(concat(variables('companyNamePrefix'), variables('sqlRSVMNameSuffix')))]",
     "adVMName": "[toupper(concat(variables('companyNamePrefix'), variables('addcVMNameSuffix')))]",
     "adNSGName": "[concat('INT-AD', parameters('deploymentNumber'))]",
     "virtualNetworkName": "[concat(variables('companyNamePrefix'), parameters('deploymentNumber'), '-vnet')]",
@@ -131,6 +138,7 @@
     "storageAccountType": "Standard_LRS",
     "wapVMName": "[toupper(concat(variables('companyNamePrefix'), variables('wapVMNameSuffix')))]",
     "adfsTemplateURI": "[concat(parameters('assetLocation'),'Templates/adfsDeploy.json')]",
+    "sqlRSTemplateURI": "[concat(parameters('assetLocation'),'Templates/sqlDeploy.json')]",
     "nsgTemplateURI": "[concat(parameters('assetLocation'),'Templates/NSGs.json')]",
     "vnetTemplateURI": "[concat(parameters('assetLocation'),'Templates/deployVNet.json')]",
     "vnetDNSTemplateURI": "[concat(parameters('assetLocation'),'Templates/deployVNetDNS.json')]",
@@ -343,6 +351,36 @@
           "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
           "vmSize": { "value": "[parameters('vmSize')]" },
           "wapVMName": { "value": "[variables('wapVMName')]" },
+          "deploymentNumber": { "value": "[parameters('deploymentNumber')]" },
+          "adfsFarmCount": { "value": "[parameters('AdfsFarmCount')]" }
+        }
+      }
+    },
+        {
+      "name": "SQLRSVMs",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "virtualNetworkDNSUpdate"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": { "uri": "[variables('sqlRSTemplateURI')]" },
+        "parameters": {
+          "sqlRSIP": { "value": "[parameters('sqlRSIP')]" },
+          "adSubnetName": { "value": "[variables('adSubnetName')]" },
+          "sqlRSVMName": { "value": "[variables('sqlRSVMName')]" },
+          "adDomainName": { "value": "[parameters('adDomainName')]" },
+          "adminPassword": { "value": "[parameters('adminPassword')]" },
+          "adminUsername": { "value": "[parameters('adminUsername')]" },
+          "assetlocation": { "value": "[parameters('assetLocation')]" },
+          "dmzSubnetName": { "value": "[variables('dmzSubnetName')]" },
+          "dmzNSGName": { "value": "[variables('dmzNSGName')]" },
+          "location": { "value": "[variables('location')]" },
+          "networkInterfaceName": { "value": "[variables('NetworkInterfaceName')]" },
+          "publicIPAddressDNSName": { "value": "[variables('publicIPAddressDNSName')]" },
+          "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
+          "vmSize": { "value": "[parameters('vmSize')]" },
           "deploymentNumber": { "value": "[parameters('deploymentNumber')]" },
           "adfsFarmCount": { "value": "[parameters('AdfsFarmCount')]" }
         }
