@@ -4,7 +4,7 @@
   "parameters": {
     "assetLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com//kobile70/PBI/master/lab-hybrid-adfs/",
+      "defaultValue": "https://raw.githubusercontent.com/kobile70/PBI/master/lab-hybrid-adfs/",
       "metadata": { "description": "This is the location in which all the linked templates are stored." }
     },
     "adminUsername": {
@@ -134,6 +134,7 @@
     "imagePublisher": "MicrosoftWindowsServer",
     "imageSKU": "2012-R2-Datacenter",
     "publicIPAddressDNSName": "[tolower(concat(variables('companyNamePrefix'),parameters('deploymentNumber'),'-adfs'))]",
+    "sqlrspublicIPAddressDNSName": "[tolower(concat(variables('companyNamePrefix'),parameters('deploymentNumber'),'-sql'))]",
     "rdpIPAddressDNSName": "[tolower(concat(variables('companyNamePrefix'),'-adfs-rdp'))]",
     "storageAccountType": "Standard_LRS",
     "wapVMName": "[toupper(concat(variables('companyNamePrefix'), variables('wapVMNameSuffix')))]",
@@ -378,7 +379,7 @@
           "dmzNSGName": { "value": "[variables('dmzNSGName')]" },
           "location": { "value": "[variables('location')]" },
           "networkInterfaceName": { "value": "[variables('NetworkInterfaceName')]" },
-          "publicIPAddressDNSName": { "value": "[variables('publicIPAddressDNSName')]" },
+          "sqlrspublicIPAddressDNSName": { "value": "[variables('sqlrspublicIPAddressDNSName')]" },
           "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
           "vmSize": { "value": "[parameters('vmSize')]" },
           "deploymentNumber": { "value": "[parameters('deploymentNumber')]" },
