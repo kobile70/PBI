@@ -4,8 +4,8 @@
 
 Description | Link
 --- | ---
-Full deploy - AD, ADFS, WAP | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Factive-directory-lab-hybrid-adfs%2Fmaster%2Flab-hybrid-adfs%2FNoClientDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
-Full deploy - AD, ADFS, WAP, _with client machines*_ | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Factive-directory-lab-hybrid-adfs%2Fmaster%2Flab-hybrid-adfs%2FFullDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+Full deploy - AD, ADFS, WAP | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkobile70%2FPBI%2Fmaster%2Flab-hybrid-adfs%2FNoClientDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+Full deploy - AD, ADFS, WAP, _with client machines*_ | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkobile70%2FPBIMobile-lab%2Fmaster%2lab-hybrid-adfs%2FFullDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 ## Details
 * Deploys the following infrastructure:
@@ -52,7 +52,7 @@ The "deploy.ps1" file above can be downloaded and run locally against this repo,
 * It will then create an RDP connectoid in that folder for each server and client that was deployed.
 * It will then create an HTTP shortcut to the ADFS WAP endpoint for testing and confirming the deployment.
 
-The deploy script master has a [line](https://github.com/Azure-Samples/active-directory-lab-hybrid-adfs/blob/master/lab-hybrid-adfs/deploy.ps1#L48) that allows you to separate your specific variables from the master via dot-sourcing. Here's a sample dot-sourced variable overrides file:
+The deploy script master has a [line](https://github.com/kobile70%2FPBIMobile-lab/blob/blob/master/deploy.ps1#L48) that allows you to separate your specific variables from the master via dot-sourcing. Here's a sample dot-sourced variable overrides file:
 ```powershell
 #Login if necessary
 $AzureSub = "My Azure Subscription"try { $ctx=Get-AzureRmContext -ErrorAction Stop }
@@ -72,7 +72,7 @@ if ($ctx.SubscriptionName -ne $AzureSub) { Set-AzureRmContext -SubscriptionName 
     $clientsToDeploy         = @("7")
     $clientImageBaseResource = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/ImageRG/providers/Microsoft.Compute/images/"
     $AdfsFarmCount           = "1";
-    $AssetLocation           = "https://raw.githubusercontent.com/Azure-Samples/active-directory-lab-hybrid-adfs/$Branch/lab-hybrid-adfs/"
+    $AssetLocation           = "https://raw.githubusercontent.com/kobile70%2FPBIMobile-lab/blob/$Branch/lab-hybrid-adfs/"
 
     $usersArray              = @(
                                 @{ "FName"= "Bob"; "LName"= "Jones"; "SAM"= "bjones" },
@@ -92,5 +92,4 @@ if ($ctx.SubscriptionName -ne $AzureSub) { Set-AzureRmContext -SubscriptionName 
 ## Contributing
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
 
