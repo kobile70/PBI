@@ -63,6 +63,12 @@
       "allowedValues": [ "1", "2", "3", "4", "5" ],
       "metadata": { "description": "An ADFS/WAP server combo will be setup independently this number of times. NOTE: it's unlikely to ever need more than one - additional farm counts are for edge case testing." }
     },
+    "sqlCount": {
+      "type": "string",
+      "defaultValue": "1",
+      "allowedValues": [ "1", "2"],
+      "metadata": { "description": "An SQL server will be setup independently this number of times." }
+    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_A2_v2",
@@ -383,7 +389,7 @@
           "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
           "vmSize": { "value": "[parameters('vmSize')]" },
           "deploymentNumber": { "value": "[parameters('deploymentNumber')]" },
-          "adfsFarmCount": { "value": "[parameters('AdfsFarmCount')]" }
+          "sqlCount": { "value": "[parameters('sqlCount')]" }
         }
       }
     },
