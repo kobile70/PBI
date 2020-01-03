@@ -1,0 +1,239 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dmzNSGName": {
+      "type": "string",
+      "defaultValue": "DMZ-WAP"
+    },
+    "adSubnetName": {
+      "type": "string",
+      "defaultValue": "adSubnet"
+    },
+    "sqlRSVMName": {
+      "type": "string",
+      "defaultValue": "AZsqlRS"
+    },
+    "sqlRSIP": {
+      "type": "string",
+      "metadata": { "description": "The IP Addresses assigned to the domain controllers (a, b). Remember the first IP in a subnet is .4 e.g. 10.0.0.0/16 reserves 10.0.0.0-3. Specify one IP per server - must match numberofVMInstances or deployment will fail.s" },
+      "defaultValue": "10.0.1.8"
+    },
+    "adDomainName": {
+      "type": "string",
+      "defaultValue": "contoso.com"
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin password"
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username"
+      }
+    },
+    "deploymentNumber": {
+      "type": "string",
+      "defaultValue": "1",
+      "metadata": {
+        "description": "When deploying the stack N times, define the instance - this will be appended to some resource names to avoid collisions."
+      }
+    },
+    "assetLocation": {
+      "type": "string"
+    },
+    "dmzSubnetName": {
+      "type": "string",
+      "defaultValue": "adSubnet"
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "Description": "The region to deploy the resources into"
+      }
+    },
+    "NetworkInterfaceName": {
+      "type": "string",
+      "defaultValue": "NIC",
+      "metadata": {
+        "description": "This is the prefix name of the Network interfaces"
+      }
+    },
+    "publicIPAddressDNSName": {
+      "type": "string"
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "vnet"
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D1_v2",
+      "metadata": {
+        "description": "This is the allowed list of VM sizes"
+      }
+    },
+    "sqlRSFarmCount": {
+      "type": "string",
+      "defaultValue": "1",
+      "allowedValues": [ "1", "2", "3", "4", "5" ],
+      "metadata": { "description": "An sqlRS/WAP server combo will be setup independently this number of times. NOTE: it's unlikely to ever need more than one - additional farm counts are for edge case testing." }
+    }
+  },
+  "variables": {
+    "sqlRSDeployCount": "[int(parameters('sqlRSFarmCount'))]",
+    "shortDomainName": "[split(parameters('adDomainName'),'.')[0]]",
+    "sqlRSNetworkArr": "[split(parameters('sqlRSIP'),'.')]",
+    "sqlRSStartIpNodeAddress": "[int(variables('sqlRSNetworkArr')[3])]",
+    "sqlRSNetworkString": "[concat(variables('sqlRSNetworkArr')[0],'.',variables('sqlRSNetworkArr')[1],'.',variables('sqlRSNetworkArr')[2],'.')]",
+    "sqlRSNICName": "[concat('sqlRS-',parameters('NetworkInterfaceName'),parameters('deploymentNumber'))]",
+    "sqlRSPubIpName": "[concat('sqlRSPubIP', parameters('deploymentNumber'))]",
+    "adSubnetID": "[concat(variables('vnetID'),'/subnets/',parameters('adSubnetName'))]",
+    "apiVersion": "2015-06-15",
+    "computeApiVersion": "2016-04-30-preview",
+    "dmzSubnetID": "[concat(variables('vnetID'),'/subnets/',parameters('dmzSubnetName'))]",
+    "domainJoinOptions": "3",
+    "imageOffer": "WindowsServer",
+    "imagePublisher": "MicrosoftWindowsServer",
+    "imageSKU": "2012-R2-Datacenter",
+    "publicIPAddressDNSName": "[tolower(parameters('publicIPAddressDNSName'))]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "wapNICName": "[concat('wap-',parameters('NetworkInterfaceName'),parameters('deploymentNumber'))]",
+    "wapPubIpName": "[concat('WAPPubIP', parameters('deploymentNumber'))]"
+  },
+  "resources": [
+    {
+      "name": "[concat(variables('sqlRSPubIpName'), copyIndex(1))]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "sqlRSIpCopy",
+        "count": "[variables('sqlRSDeployCount')]"
+      },
+      "apiVersion": "[variables('apiVersion')]",
+      "tags": {
+        "displayName": "sqlRSPubIp"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[tolower(concat(parameters('sqlRSVMName'), parameters('deploymentNumber'), '-', copyIndex(1)))]"
+        }
+      }
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('sqlRSNICName'), copyIndex(1))]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "sqlRSNicCopy",
+        "count": "[variables('sqlRSDeployCount')]"
+      },
+      "tags": { "displayName": "sqlRSNIC" },
+      "dependsOn": [
+        "sqlRSIpCopy"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[concat('sqlRSipconfig', parameters('deploymentNumber'), copyIndex(1))]",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(variables('sqlRSNetworkString'), add(copyIndex(),variables('sqlRSStartIpNodeAddress')))]",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(variables('sqlRSPubIpName'), copyIndex(1)))]"
+              },
+              "subnet": {
+                "id": "[variables('adSubnetID')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "[variables('computeApiVersion')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('sqlRSVMName'), copyIndex(1))]",
+      "location": "[parameters('location')]",
+      "copy": {
+        "name": "sqlRSVmCopy",
+        "count": "[variables('sqlRSDeployCount')]"
+      },
+      "tags": { "displayName": "sqlRSVM" },
+      "dependsOn": [
+        "sqlRSNicCopy"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('sqlRSVMName'), copyIndex(1))]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('imageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceid('Microsoft.Network/networkInterfaces', concat(variables('sqlRSNICName'), copyIndex(1)))]"
+            }
+          ]
+        }
+      },
+      "resources": [
+      ]
+    },
+    {
+      "apiVersion": "[variables('apiVersion')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('sqlRSVMName'), copyIndex(1), '/joindomain')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "sqlRSVmCopy"
+      ],
+      "tags": {
+        "displayName": "sqlRSVMJoin",
+        "isClient": "true"
+      },
+      "copy": {
+        "name": "joinCopy",
+        "count": "[variables('sqlRSDeployCount')]"
+      },
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "JsonADDomainExtension",
+        "typeHandlerVersion": "1.3",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "Name": "[parameters('adDomainName')]",
+          "OUPath": "",
+          "User": "[concat(variables('shortDomainName'), '\\', parameters('adminUsername'))]",
+          "Restart": "true",
+          "Options": "[variables('domainJoinOptions')]"
+        },
+        "protectedsettings": {
+          "Password": "[parameters('adminPassword')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
