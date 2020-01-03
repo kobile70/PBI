@@ -62,7 +62,7 @@
         "description": "This is the prefix name of the Network interfaces"
       }
     },
-    "publicIPAddressDNSName": {
+    "SQLRSpublicIPAddressDNSName": {
       "type": "string"
     },
     "virtualNetworkName": {
@@ -99,10 +99,8 @@
     "imageOffer": "WindowsServer",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageSKU": "2012-R2-Datacenter",
-    "publicIPAddressDNSName": "[tolower(parameters('publicIPAddressDNSName'))]",
-    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "wapNICName": "[concat('wap-',parameters('NetworkInterfaceName'),parameters('deploymentNumber'))]",
-    "wapPubIpName": "[concat('WAPPubIP', parameters('deploymentNumber'))]"
+    "publicIPAddressDNSName": "[tolower(parameters('SQLRSpublicIPAddressDNSName'))]",
+    "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
   },
   "resources": [
     {
