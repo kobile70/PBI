@@ -1,11 +1,11 @@
-# Azure Active Directory Hybrid ADFS Lab
-## Creates full AD/CA/ADFS/WAP environment with Azure AD Connect installed
+# Azure Active Directory AD, ADFS, WAP and SQLRS Lab
+## Creates full AD/CA/ADFS/WAP/SQLRS environment for PowerBI Mobile
 ## Quick Start
 
 Description | Link
 --- | ---
-Full deploy - AD, ADFS, WAP | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkobile70%2FPBI%2Fmaster%2Flab-hybrid-adfs%2FNoClientDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
-Full deploy - AD, ADFS, WAP, _with client machines*_ | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkobile70%2FPBIMobile-lab%2Fmaster%2lab-hybrid-adfs%2FFullDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+Full deploy - AD, ADFS, WAP, SQLRS | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkobile70%2FPBI%2Fmaster%2Flab-hybrid-adfs%2FNoClientDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
+Full deploy - AD, ADFS, WAP, SQLRS, _with client machines*_ | <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fkobile70%2FPBIMobile-lab%2Fmaster%2lab-hybrid-adfs%2FFullDeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 ## Details
 * Deploys the following infrastructure:
@@ -31,6 +31,8 @@ Full deploy - AD, ADFS, WAP, _with client machines*_ | <a href="https://portal.a
   * WAP VM - one for each ADFS VM
 	* DSC installs WAP role
     * CustomScriptExtension copies and installs the cert from the DC and connects to the ADFS farm
+  * SQL VM - one vm with SQL and RS installed - domain joined
+	* DSC installs configure RS role for oauth
 
 ## Notes
 * _A template is included for Client creation via MSDN images. You will need to update the URL to point to your images. Images must be named "OSImage_Win&lt;version&gt;"._ You are responsible for validating your licensing rights for client MSDN images in your subscription.
