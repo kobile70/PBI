@@ -76,7 +76,7 @@
         "description": "This is the allowed list of VM sizes"
       }
     },
-    "sqlRSFarmCount": {
+    "sqlCount": {
       "type": "string",
       "defaultValue": "1",
       "allowedValues": [ "1", "2", "3", "4", "5" ],
@@ -84,7 +84,7 @@
     }
   },
   "variables": {
-    "sqlRSDeployCount": "[int(parameters('sqlRSFarmCount'))]",
+    "sqlRSDeployCount": "[int(parameters('sqlCount'))]",
     "shortDomainName": "[split(parameters('adDomainName'),'.')[0]]",
     "sqlRSNetworkArr": "[split(parameters('sqlRSIP'),'.')]",
     "sqlRSStartIpNodeAddress": "[int(variables('sqlRSNetworkArr')[3])]",
