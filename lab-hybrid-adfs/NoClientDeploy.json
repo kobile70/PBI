@@ -549,11 +549,11 @@
                 "properties": {
                   "SQLAdminAuthCreds": {
                     "userName": "[parameters('adminUsername')]",
-                    "Password": "[parameters('AdminPassword')]"
+                    "Password": "PrivateSettingsRef:AdminPassword"
                   },
                   "SQLAuthCreds": {
                     "userName": "localsa",
-                    "Password": "[parameters('AdminPassword')]"
+                    "Password": "PrivateSettingsRef:AdminPassword"
                   },
                   "DisksCount": 1,
                   "DiskSizeInGB": 1023,
