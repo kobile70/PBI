@@ -175,8 +175,19 @@
           "osDisk": {
             "caching": "ReadWrite",
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+              {
+                "lun": 0,
+                "name":"[concat(parameters('sqlRSVMName'),'_DataDisk1')]",
+                "createOption": "Empty",
+                "caching": "ReadOnly",
+                "diskSizeGB": "1023"
+              }
+            ]
+
         },
+
         "networkProfile": {
           "networkInterfaces": [
             {
