@@ -2,10 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "dmzNSGName": {
-      "type": "string",
-      "defaultValue": "DMZ-WAP"
-    },
     "adSubnetName": {
       "type": "string",
       "defaultValue": "adSubnet"
@@ -44,10 +40,6 @@
     },
     "assetLocation": {
       "type": "string"
-    },
-    "dmzSubnetName": {
-      "type": "string",
-      "defaultValue": "adSubnet"
     },
     "location": {
       "type": "string",
@@ -94,12 +86,10 @@
     "adSubnetID": "[concat(variables('vnetID'),'/subnets/',parameters('adSubnetName'))]",
     "apiVersion": "2015-06-15",
     "computeApiVersion": "2016-04-30-preview",
-    "dmzSubnetID": "[concat(variables('vnetID'),'/subnets/',parameters('dmzSubnetName'))]",
     "domainJoinOptions": "3",
-    "imageOffer": "WindowsServer",
-    "imagePublisher": "MicrosoftWindowsServer",
-    "imageSKU": "2012-R2-Datacenter",
-    "publicIPAddressDNSName": "[tolower(parameters('SQLRSpublicIPAddressDNSName'))]",
+    "sqlImagePublisher": "MicrosoftSQLServer",
+    "sqlImageOffer": "SQL2014SP2-WS2012R2",
+    "sqlImageSku": "Enterprise",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
   },
   "resources": [
@@ -118,7 +108,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[tolower(concat(parameters('sqlRSVMName'), parameters('deploymentNumber'), '-', copyIndex(1)))]"
+          "domainNameLabel": "[tolower(concat(parameters('SQLRSpublicIPAddressDNSName'), parameters('deploymentNumber'), '-', copyIndex(1)))]"
         }
       }
     },
@@ -177,9 +167,9 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[variables('imageSKU')]",
+            "publisher": "[variables('sqlimagePublisher')]",
+            "offer": "[variables('sqlimageOffer')]",
+            "sku": "[variables('sqlimageSKU')]",
             "version": "latest"
           },
           "osDisk": {
