@@ -88,7 +88,7 @@
     "computeApiVersion": "2016-04-30-preview",
     "domainJoinOptions": "3",
     "sqlImagePublisher": "MicrosoftSQLServer",
-    "sqlImageOffer": "SQL2014SP2-WS2012R2",
+    "sqlImageOffer": "SQL2016SP2-WS2016",
     "sqlImageSku": "Enterprise",
     "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
   },
