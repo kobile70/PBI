@@ -155,8 +155,7 @@
     "CopyCertToWAPTemplate": "CopyCertToWAP.ps1",
     "CopyCertToWAPTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/CopyCertToWAP.ps1')]",
     "adDSCConfigurationFunction": "adDSCConfiguration.ps1\\DomainController",
-    "sqlpublicIPAddressName":"[concat('sqlRSPubIP', parameters('deploymentNumber'))]",
-    "catalogPublicIpId": "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('sqlpublicIPAddressName'), 0))]",
+    "catalogPublicIpId": "[tolower(concat(variables('companyNamePrefix'),parameters('deploymentNumber'),'-sql'))]",
     "sqlModuleUrl": "[concat(parameters('assetLocation'), 'DSC/PrepareSqlServer.ps1.zip')]",
     "sqlSAConfigurationConfigurationFunction": "PrepareSqlServerSa.ps1\\PrepareSqlServerSa",
     "subnets": [
@@ -559,7 +558,7 @@
                   "DisksCount": 1,
                   "DiskSizeInGB": 1023,
                   "DatabaseEnginePort": 1433,
-                  "CatalogMachine": "[reference(variables('catalogPublicIpId'),'2015-06-15').dnsSettings.fqdn]",
+                  "CatalogMachine": "[concat(variables('catalogPublicIpId'),'{0}.', toLower(replace(resourceGroup().location,' ','')),'.cloudapp.azure.com')]",
                   "WorkloadType": "General",
                   "ConnectionType": "Public"
                 }
