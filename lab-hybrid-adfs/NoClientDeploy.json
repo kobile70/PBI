@@ -138,7 +138,7 @@
     "cliSubnetName": "[concat('clientSubnet', parameters('deploymentNumber'))]",
     "imageOffer": "WindowsServer",
     "imagePublisher": "MicrosoftWindowsServer",
-    "imageSKU": "2012-R2-Datacenter",
+    "imageSKU": "2016-Datacenter",
     "publicIPAddressDNSName": "[tolower(concat(variables('companyNamePrefix'),parameters('deploymentNumber'),'-adfs'))]",
     "sqlrspublicIPAddressDNSName": "[tolower(concat(variables('companyNamePrefix'),parameters('deploymentNumber'),'-sql'))]",
     "rdpIPAddressDNSName": "[tolower(concat(variables('companyNamePrefix'),'-adfs-rdp'))]",
@@ -155,8 +155,9 @@
     "CopyCertToWAPTemplate": "CopyCertToWAP.ps1",
     "CopyCertToWAPTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/CopyCertToWAP.ps1')]",
     "adDSCConfigurationFunction": "adDSCConfiguration.ps1\\DomainController",
-    "sqlModuleUrl": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/sql-reporting-services-sql-server/DSC/PrepareSqlServer.ps1.zip",
-    "rsConfigurationConfigurationFunction": "PrepareRsServer.ps1\\PrepareSSRSServer",
+    "sqlpublicIPAddressName":"[concat('sqlRSPubIP', parameters('deploymentNumber'))]",
+    "catalogPublicIpId": "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('sqlpublicIPAddressName'), 0))]",
+    "sqlModuleUrl": "[concat(parameters('assetLocation'), 'DSC/PrepareSqlServer.ps1.zip')]",
     "sqlSAConfigurationConfigurationFunction": "PrepareSqlServerSa.ps1\\PrepareSqlServerSa",
     "subnets": [
       {
@@ -558,6 +559,7 @@
                   "DisksCount": 1,
                   "DiskSizeInGB": 1023,
                   "DatabaseEnginePort": 1433,
+                  "CatalogMachine": "[reference(variables('catalogPublicIpId'),'2015-06-15').dnsSettings.fqdn]",
                   "WorkloadType": "General",
                   "ConnectionType": "Public"
                 }
