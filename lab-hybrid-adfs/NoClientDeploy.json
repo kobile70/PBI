@@ -558,7 +558,7 @@
                   "DisksCount": 1,
                   "DiskSizeInGB": 1023,
                   "DatabaseEnginePort": 1433,
-                  "CatalogMachine": "[concat(variables('catalogPublicIpId'),'{0}.', toLower(replace(resourceGroup().location,' ','')),'.cloudapp.azure.com')]",
+                  "CatalogMachine": "[concat(variables('sqlRSVMName'),'.',parameters('adDomainName'))]",
                   "WorkloadType": "General",
                   "ConnectionType": "Public"
                 }
