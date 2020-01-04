@@ -381,8 +381,6 @@
           "adminPassword": { "value": "[parameters('adminPassword')]" },
           "adminUsername": { "value": "[parameters('adminUsername')]" },
           "assetlocation": { "value": "[parameters('assetLocation')]" },
-          "dmzSubnetName": { "value": "[variables('dmzSubnetName')]" },
-          "dmzNSGName": { "value": "[variables('dmzNSGName')]" },
           "location": { "value": "[variables('location')]" },
           "networkInterfaceName": { "value": "[variables('NetworkInterfaceName')]" },
           "sqlrspublicIPAddressDNSName": { "value": "[variables('sqlrspublicIPAddressDNSName')]" },
