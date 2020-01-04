@@ -155,6 +155,9 @@
     "CopyCertToWAPTemplate": "CopyCertToWAP.ps1",
     "CopyCertToWAPTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/CopyCertToWAP.ps1')]",
     "adDSCConfigurationFunction": "adDSCConfiguration.ps1\\DomainController",
+    "sqlModuleUrl": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/sql-reporting-services-sql-server/DSC/PrepareSqlServer.ps1.zip",
+    "rsConfigurationConfigurationFunction": "PrepareRsServer.ps1\\PrepareSSRSServer",
+    "sqlSAConfigurationConfigurationFunction": "PrepareSqlServerSa.ps1\\PrepareSqlServerSa",
     "subnets": [
       {
         "name": "[variables('adSubnetName')]",
@@ -363,34 +366,6 @@
         }
       }
     },
-        {
-      "name": "SQLRSVMs",
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2015-01-01",
-      "dependsOn": [
-        "virtualNetworkDNSUpdate"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "templateLink": { "uri": "[variables('sqlRSTemplateURI')]" },
-        "parameters": {
-          "sqlRSIP": { "value": "[parameters('sqlRSIP')]" },
-          "adSubnetName": { "value": "[variables('adSubnetName')]" },
-          "sqlRSVMName": { "value": "[variables('sqlRSVMName')]" },
-          "adDomainName": { "value": "[parameters('adDomainName')]" },
-          "adminPassword": { "value": "[parameters('adminPassword')]" },
-          "adminUsername": { "value": "[parameters('adminUsername')]" },
-          "assetlocation": { "value": "[parameters('assetLocation')]" },
-          "location": { "value": "[variables('location')]" },
-          "networkInterfaceName": { "value": "[variables('NetworkInterfaceName')]" },
-          "sqlrspublicIPAddressDNSName": { "value": "[variables('sqlrspublicIPAddressDNSName')]" },
-          "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
-          "vmSize": { "value": "[parameters('vmSize')]" },
-          "deploymentNumber": { "value": "[parameters('deploymentNumber')]" },
-          "sqlCount": { "value": "[parameters('sqlCount')]" }
-        }
-      }
-    },
     {
       "name": "[concat(variables('adfsVMName'), copyIndex(1),'/Microsoft.Powershell.DSC')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -518,7 +493,83 @@
           "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('CopyCertToWAPTemplate'), ' -DCFQDN ', concat(variables('adVMName'), '.', parameters('adDomainName')), ' -adminuser ', parameters('adminUsername'), ' -password ', parameters('adminPassword'), ' -instance ', copyIndex(1), ' -WapFqdn ', variables('WAPPubIpDnsFQDN'))]"
         }
       }
-    }
+    },
+            {
+      "name": "SQLRSVMs",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "virtualNetworkDNSUpdate"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": { "uri": "[variables('sqlRSTemplateURI')]" },
+        "parameters": {
+          "sqlRSIP": { "value": "[parameters('sqlRSIP')]" },
+          "adSubnetName": { "value": "[variables('adSubnetName')]" },
+          "sqlRSVMName": { "value": "[variables('sqlRSVMName')]" },
+          "adDomainName": { "value": "[parameters('adDomainName')]" },
+          "adminPassword": { "value": "[parameters('adminPassword')]" },
+          "adminUsername": { "value": "[parameters('adminUsername')]" },
+          "assetlocation": { "value": "[parameters('assetLocation')]" },
+          "location": { "value": "[variables('location')]" },
+          "networkInterfaceName": { "value": "[variables('NetworkInterfaceName')]" },
+          "sqlrspublicIPAddressDNSName": { "value": "[variables('sqlrspublicIPAddressDNSName')]" },
+          "virtualNetworkName": { "value": "[variables('virtualNetworkName')]" },
+          "vmSize": { "value": "[parameters('vmSize')]" },
+          "deploymentNumber": { "value": "[parameters('deploymentNumber')]" },
+          "sqlCount": { "value": "[parameters('sqlCount')]" }
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('sqlrsVMName'), copyIndex(1),'/Microsoft.Powershell.DSC')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "location": "[variables('location')]",
+      "apiVersion": "2015-06-15",
+      "copy": {
+        "name": "SQLConfigurationMixedAuth",
+        "count": "[variables('adfsDeployCount')]"
+      },
+      "dependsOn": [
+        "SQLRSVMs",
+        "[concat('Microsoft.Compute/virtualMachines/', variables('adVMName'),'/extensions/Microsoft.Powershell.DSC')]"
+      ],
+      "tags": {
+        "displayName": "SQLDSC"
+      },
+      "properties": {
+              "publisher": "Microsoft.Powershell",
+              "type": "DSC",
+              "typeHandlerVersion": "2.19",
+              "autoUpgradeMinorVersion": true,
+              "settings": {
+                "modulesUrl": "[variables('sqlModuleUrl')]",
+                "configurationFunction": "[variables('sqlSAConfigurationConfigurationFunction')]",
+                "properties": {
+                  "SQLAdminAuthCreds": {
+                    "userName": "[parameters('adminUsername')]",
+                    "Password": "[parameters('AdminPassword')]"
+                  },
+                  "SQLAuthCreds": {
+                    "userName": "localsa",
+                    "Password": "[parameters('AdminPassword')]"
+                  },
+                  "DisksCount": 1,
+                  "DiskSizeInGB": 1023,
+                  "DatabaseEnginePort": 1433,
+                  "WorkloadType": "General",
+                  "ConnectionType": "Public"
+                }
+              },
+              "protectedSettings": {
+                "Items": {
+                  "AdminPassword": "[parameters('adminPassword')]",
+                  "SAPassword": "[parameters('adminPassword')]"
+                }
+              }
+            }
+          }
   ],
   "outputs": {
 
