@@ -72,11 +72,11 @@ if (-not $elevated) {
 	#Install-Module -Name Azure -AllowClobber -Force
 	#Install-Module -Name AzureRM -AllowClobber -Force
 
-	Install-Module -Name MSOnline -Force
+	#Install-Module -Name MSOnline -Force
 
-	Install-Module -Name AzureAD -Force
+	#Install-Module -Name AzureAD -Force
 
-	Install-Module -Name AzureADPreview -AllowClobber -Force
+	#Install-Module -Name AzureADPreview -AllowClobber -Force
 
     # Setup Shortcuts
 	md c:\AADLab -ErrorAction Ignore
@@ -101,4 +101,5 @@ if (-not $elevated) {
 		$Shortcut.IconLocation = $link.icon
 		$Shortcut.Save()
 	}
+    Set-AdfsProperties –EnableIdpInitiatedSignonPage $True
 }
