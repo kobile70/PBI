@@ -1,4 +1,4 @@
-# Azure Active Directory AD, ADFS, WAP and SQLRS Lab
+# Windows Active Directory AD, ADFS, WAP and SQLRS Lab
 ## Creates full AD/CA/ADFS/WAP/SQLRS environment for PowerBI Mobile
 ## Quick Start
 
@@ -21,17 +21,14 @@ Full deploy - AD, ADFS, WAP, SQLRS | <a href="https://portal.azure.com/#create/M
     * Split-brain DNS on the DC is configured for the ADFS URL
     * The Azure vNet is updated with a custom DNS entry pointing to the DC
     * Test users are created in the local AD by passing in an array. There is an array sample set as the default value in the deployment template.
-    * Azure Active Directory Connect is installed and available to configure.
   * ADFS VM
 	* DSC installs ADFS Role, pulls and installs cert from CA on the DC
     * CustomScriptExtension configures the ADFS farm
-    * For unique testing scenarios, multiple distinct farms may be specified
-    * Azure Active Directory Connect is installed and available to configure.
   * WAP VM - one for each ADFS VM
 	* DSC installs WAP role
     * CustomScriptExtension copies and installs the cert from the DC and connects to the ADFS farm
   * SQL VM - one vm with SQL and RS installed - domain joined
-	* DSC installs configure RS role for oauth
+	* DSC installs configure RS role for mixed oauth
 
 ## Notes
 * _A template is included for Client creation via MSDN images. You will need to update the URL to point to your images. Images must be named "OSImage_Win&lt;version&gt;"._ You are responsible for validating your licensing rights for client MSDN images in your subscription.
@@ -52,45 +49,3 @@ The "deploy.ps1" file above can be downloaded and run locally against this repo,
 * After the deployment completes, it will create a folder on your desktop with the name of the resource group
 * It will then create an RDP connectoid in that folder for each server and client that was deployed.
 * It will then create an HTTP shortcut to the ADFS WAP endpoint for testing and confirming the deployment.
-
-The deploy script master has a [line](https://github.com/kobile70%2FPBIMobile-lab/blob/blob/master/deploy.ps1#L48) that allows you to separate your specific variables from the master via dot-sourcing. Here's a sample dot-sourced variable overrides file:
-```powershell
-#Login if necessary
-$AzureSub = "My Azure Subscription"try { $ctx=Get-AzureRmContext -ErrorAction Stop }
-catch { Login-AzureRmAccount }
-if ($ctx.SubscriptionName -ne $AzureSub) { Set-AzureRmContext -SubscriptionName $AzureSub }
-
-#DEPLOYMENT OPTIONS
-    $Branch                  = "master"
-
-    $VNetAddrSpace2ndOctet   = "2"
-    $RGName                  = "TestRG$VNetAddrSpace2ndOctet"
-    $DeployRegion            = "West US 2"
-    $userName                = "localAdmin"
-    $secpasswd               = "CrazyP@ssword"
-    $adDomainName            = "aadpoctest.com"
-    #$clientsToDeploy         = @("10-1511","10-1607","10-1703","7","8")
-    $clientsToDeploy         = @("7")
-    $clientImageBaseResource = "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/ImageRG/providers/Microsoft.Compute/images/"
-    $AdfsFarmCount           = "1";
-    $AssetLocation           = "https://raw.githubusercontent.com/kobile70%2FPBIMobile-lab/blob/$Branch/lab-hybrid-adfs/"
-
-    $usersArray              = @(
-                                @{ "FName"= "Bob"; "LName"= "Jones"; "SAM"= "bjones" },
-                                @{ "FName"= "Bill"; "LName"= "Smith"; "SAM"= "bsmith" },
-                                @{ "FName"= "Mary"; "LName"= "Phillips"; "SAM"= "mphillips" },
-                                @{ "FName"= "Sue"; "LName"= "Jackson"; "SAM"= "sjackson" }
-                            );
-    $defaultUserPassword     = "P@ssw0rd"
-    $RDPWidth                = 1680
-    $RDPHeight               = 1050
-
-#END DEPLOYMENT OPTIONS
-
-```
-
- 
-## Contributing
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
