@@ -155,7 +155,6 @@
     "CopyCertToWAPTemplate": "CopyCertToWAP.ps1",
     "CopyCertToWAPTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/CopyCertToWAP.ps1')]",
     "adDSCConfigurationFunction": "adDSCConfiguration.ps1\\DomainController",
-    "catalogPublicIpId": "[tolower(concat(variables('companyNamePrefix'),parameters('deploymentNumber'),'-sql'))]",
     "sqlModuleUrl": "[concat(parameters('assetLocation'), 'DSC/PrepareSqlServer.ps1.zip')]",
     "sqlSAConfigurationConfigurationFunction": "PrepareSqlServerSa.ps1\\PrepareSqlServerSa",
     "subnets": [
@@ -274,7 +273,7 @@
       "location": "[variables('location')]",
       "apiVersion": "2015-06-15",
       "dependsOn": [
-        "Microsoft.Resources/Deployments/adVMs"
+        "Microsoft.Resources/Deployments/virtualNetworkDNSUpdate"
       ],
       "tags": {
         "displayName": "adDSC"
@@ -340,7 +339,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "virtualNetworkDNSUpdate"
+        "Microsoft.Resources/Deployments/adDSC"
       ],
       "properties": {
         "mode": "Incremental",
@@ -447,7 +446,7 @@
         "count": "[variables('adfsDeployCount')]"
       },
       "dependsOn": [
-        "adfsVMs"
+        "adfsFarmInstallCopy"
       ],
       "tags": {
         "displayName": "wapDSCPrep"
