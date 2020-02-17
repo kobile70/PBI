@@ -339,7 +339,7 @@
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": [
-        "Microsoft.Resources/Deployments/adDSC"
+        "adDSC"
       ],
       "properties": {
         "mode": "Incremental",
