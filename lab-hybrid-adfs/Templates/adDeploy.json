@@ -9,11 +9,11 @@
     },
     "adminPassword": {
       "type": "securestring",
-      "metadata": { "description": "Admin password" }
+      "metadata": { "description": "The admin password" }
     },
     "adminUsername": {
       "type": "string",
-      "metadata": { "description": "Admin username" }
+      "metadata": { "description": "The admin username" }
     },
     "deploymentNumber": {
       "type": "string",
