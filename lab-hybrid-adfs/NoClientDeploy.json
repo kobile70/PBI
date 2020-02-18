@@ -156,7 +156,7 @@
     "CopyCertToWAPTemplateUri": "[concat(parameters('assetLocation'), 'Scripts/CopyCertToWAP.ps1')]",
     "adDSCConfigurationFunction": "adDSCConfiguration.ps1\\DomainController",
     "sqlModuleUrl": "[concat(parameters('assetLocation'), 'DSC/PrepareSqlServer.ps1.zip')]",
-    "sqlSAConfigurationConfigurationFunction": "PrepareSqlServerSa.ps1\\PrepareSqlServerSa",
+    "sqlSAConfigurationConfigurationFunction": "PrepareSqlServer.ps1\\PrepareSqlServer",
     "subnets": [
       {
         "name": "[variables('adSubnetName')]",
